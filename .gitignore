@@ -1,0 +1,8 @@
+data/
+*.ndjson
+__pycache__/
+*.py[cod]
+.venv/
+.env
+*.pem
+.DS_Store
