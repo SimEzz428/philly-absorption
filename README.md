@@ -108,9 +108,6 @@ search to nearby tracts makes estimates worse, not better. So don't widen it.
 duplicates. The real key is (system, type, number), which also made queries
 3,516x faster.
 
-Full reasoning and every dead end is in `FINDINGS.md`.
 
-## Not done yet
 
-The Airflow DAG is tested for structure but has never been executed against a
-live Postgres. Run it one task at a time with `airflow tasks test` first.
+
