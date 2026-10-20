@@ -1,0 +1,54 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Tests
+        run: pytest -q --ignore=test_dag.py
+
+      - name: Every module parses
+        run: |
+          python3 -c "import lib; print('lib ok')"
+          python3 -m py_compile build.py analyze.py model.py \
+            ingest_permits.py ingest_rtt.py ingest_opa.py load_pg.py \
+            join.py torch_compare.py tract_comps.py
+
+      - name: Undefined names
+        run: |
+          pip install pyflakes
+          python3 -m pyflakes *.py
+
+  dags:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Airflow
+        run: pip install "apache-airflow==2.10.5" pytest
+
+      - name: DAG structure tests
+        env:
+          AIRFLOW_HOME: /tmp/airflow
+          AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+        run: pytest -q test_dag.py
